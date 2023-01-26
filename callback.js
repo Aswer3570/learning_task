@@ -69,7 +69,7 @@ function createFile() {
   })
 }
 
-getCatPic('https://meduza.io/impro/mDAiOCr_DkL0j46J66KdPK4n64Hqlxxzk_9FVcKtYPg/fill/1960/0/ce/1/aHR0cHM6Ly9tZWR1/emEuaW8vaW1hZ2Uv/YXR0YWNobWVudHMv/aW1hZ2VzLzAwOC82/ODkvMDM1L29yaWdp/bmFsL0VxbHZVNW9u/R01MX0lkd3Boc25u/SFEuanBn.webp', createFile)
+getCatPic('https://cataas.com/cat', createFile)
 
 time = performance.now() - time
 console.log(`Время выполнения: ${time}`)
