@@ -1,0 +1,17 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "author": "aswer3570",
+  "license": "ISC",
+  "dependencies": {
+    "adm-zip": "^0.5.10",
+    "nodemon": "^2.0.20",
+    "request": "^2.88.2"
+  }
+}
