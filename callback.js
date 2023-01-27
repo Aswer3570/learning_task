@@ -6,7 +6,7 @@ const path = require('path')
 const AdmZip = require('adm-zip')
 let time = performance.now()
 
-function getCatPic(url, getNamePicCallback) {
+const getCatPic = (url, getNamePicCallback) => {
   let nameCatPic = ''
 
   // Выполняем первый запрос
@@ -49,20 +49,22 @@ function getCatPic(url, getNamePicCallback) {
   })
 }
 
-function getNamePic(createZIPFileCallback) {
+const getNamePic = (createZIPFileCallback) => {
   // Получаем имя изображения
   fs.readdir('./images/', (error, files) => {
     createZIPFileCallback(error, files)
   })
 }
 
-function createZIPFile(error, files) {
+const createZIPFile = (error, files) => {
   const zip = new AdmZip()
 
   if (error) {
     console.error(error)
   }
   else {
+    time = performance.now() - time
+    console.log(`Время выполнения: ${time}`)
     files.forEach(file => {
       // Получаем данные из изображения
       fs.readFile(path.join(__dirname + '/images/' + file), function(error, data) {
