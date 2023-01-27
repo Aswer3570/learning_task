@@ -12,7 +12,7 @@ const getCatPic = (url) => {
   return new Promise((resolve, reject) => {
     https.get(url, (response) => {
       if (response.statusCode != 200) {
-        reject(new Error('Ошибка, файл не доступен'))
+        reject(new Error('Ошибка сервера'))
       }
 
       nameCatPic = `cat_${new Date().valueOf()}`
@@ -30,7 +30,7 @@ const getCatPic = (url) => {
     return new Promise((resolve, reject) => {
       https.get(url, (response) => {
         if (response.statusCode != 200) {
-          reject(new Error('Ошибка, файл не доступен'))
+          reject(new Error('Ошибка сервера'))
         }
 
         nameCatPic = `cat_${new Date().valueOf()}`
