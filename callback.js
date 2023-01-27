@@ -7,34 +7,47 @@ const AdmZip = require('adm-zip')
 let time = performance.now()
 
 function getCatPic(url, callback) {
-  for (let i = 1; i <= 2; i++) {
-    // Получаем название для файлов
-    let nameCatPic = `cat_${new Date().valueOf()}`
+  // Получаем название для файлов
+  let nameCatPic = ''
 
-    https.get(url, function(response) {
-      if (response.statusCode == 200) {
-        // Берём сгенерирование название и создаём файл
-        response.pipe(fs.createWriteStream(path.join(__dirname + '/images/', `${nameCatPic}.jpg`)))
-        // Выводим название сгенерированного файла
-        console.log(nameCatPic)
+  // Выполняем первый запрос
+  https.get(url, function(responseFirst){
+    if (responseFirst.statusCode == 200) {
+      nameCatPic = `cat_${new Date().valueOf()}`
 
-        console.log('Работает')
+      // Берём сгенерирование название и создаём файл
+      responseFirst.pipe(fs.createWriteStream(path.join(__dirname + '/images/', `${nameCatPic}.jpg`)))
 
-        // Вызываем callback когда будет закончена загрузка изображений
-        response.on('end', function() {
-          callback()
+      // Выводим название сгенерированного файла
+      console.log(nameCatPic)
 
-          console.log('Запустили callback')
+      responseFirst.on('end', function() {
+        // Выполняем второй запрос
+        https.get(url, function(responseSecond){
+          if (responseSecond.statusCode == 200) {
+            nameCatPic = `cat_${new Date().valueOf()}`
+
+            // Берём сгенерирование название и создаём файл
+            responseSecond.pipe(fs.createWriteStream(path.join(__dirname + '/images/', `${nameCatPic}.jpg`)))
+
+            // Выводим название сгенерированного файла
+            console.log(nameCatPic)
+
+            responseSecond.on('end', function() {
+              // Вызываем callback
+              callback()
+            })
+          }
+          else {
+            console.error('Ошибка, файл не доступен')
+          }
         })
-      }
-      else {
-        console.error('Ошибка, файл не доступен')
-      }
-    })
-    .on('error', (error) => {
-      console.error(error)
-    })
-  }
+      })
+    }
+    else {
+      console.error('Ошибка, файл не доступен')
+    }
+  })
 }
 
 function createFile() {
@@ -46,7 +59,8 @@ function createFile() {
       console.error(error)
     } 
     else {
-      console.log(files)
+      time =  performance.now()- time
+      console.log(`Время выполнения: ${time}`)
 
       files.forEach(file => {
         // Получаем данные из изображения
@@ -70,9 +84,6 @@ function createFile() {
 }
 
 getCatPic('https://cataas.com/cat', createFile)
-
-time = performance.now() - time
-console.log(`Время выполнения: ${time}`)
 
 http.createServer((req, res) => {
 
