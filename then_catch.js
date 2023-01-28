@@ -1,5 +1,5 @@
 const http = require('http')
-const https = require('node:https')
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
 const PORT = process.env.PORT ?? 3001
 const fs = require('fs')
 const path = require('path')
@@ -7,47 +7,37 @@ const AdmZip = require('adm-zip')
 let time = performance.now()
 
 const getCatPic = (url) => {
-  let nameCatPic = ''
-
-  return new Promise((resolve, reject) => {
-    https.get(url, (response) => {
-      if (response.statusCode != 200) {
-        reject(new Error('Ошибка сервера'))
-      }
-
-      nameCatPic = `cat_${new Date().valueOf()}`
-
-      // Берём сгенерирование название и создаём файл
-      response.pipe(fs.createWriteStream(path.join(__dirname + '/images/', `${nameCatPic}.jpg`)))
-      // Выводим название сгенерированного файла
-      console.log(nameCatPic)
-
-      resolve()
+  const firstRespondAPIPic = fetch(url)
+    .then((data) => {
+      return data
     })
-  })
-  .catch(error => console.error(error))
-  .then(() => {
-    return new Promise((resolve, reject) => {
-      https.get(url, (response) => {
-        if (response.statusCode != 200) {
-          reject(new Error('Ошибка сервера'))
-        }
 
-        nameCatPic = `cat_${new Date().valueOf()}`
+  const secondRespondAPIPic = fetch(url)
+    .then((data) => {
+      return data
+    })
 
-        // Берём сгенерирование название и создаём файл
-        response.pipe(fs.createWriteStream(path.join(__dirname + '/images/', `${nameCatPic}.jpg`)))
-        // Выводим название сгенерированного файла
+  Promise.all([firstRespondAPIPic, secondRespondAPIPic])
+    .then((apiData) => {
+      let createFile
+
+      apiData.forEach(data => {
+        nameCatPic = `cat_${Math.random().toString(16).slice(2)}`
+        
+        createFile = fs.createWriteStream(path.join(__dirname + `/images/${nameCatPic}.jpg`))
+        data.body.pipe(createFile)
         console.log(nameCatPic)
+      })
 
-        resolve()
+      createFile.on('finish', () => {
+        time = performance.now() - time
+
+        getNamePic()
       })
     })
-    .catch(error => console.error(error))
-    .then(
-      response => getNamePic()
-    )
-  })
+    .catch((error) => {
+      console.error(`Ошибка сервера: ${error}`)
+    })
 }
 
 const getNamePic = () => {
@@ -58,48 +48,41 @@ const getNamePic = () => {
         reject(new Error('Получить имя файлов не удалось'))
       }
 
+      time = performance.now() - time
       resolve(files)
     })
   })
-  .catch(error => console.error(error))
   .then(files => {
     createZIPFile(files)
   })
+  .catch(error => console.error(error))
 }
 
 const createZIPFile = files => {
-  const zip = new AdmZip()
-
-  files.forEach(file => {
-    return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
+    const zip = new AdmZip()
+    
+    files.forEach(file => {
       // Получаем данные из изображения
       fs.readFile(path.join(__dirname + '/images/' + file), (error, data) => {
         if (error) {
           reject(new Error('Получить данные из файлов не удалось'))
         }
-        
-        // Записываем данные в Буфер
-        const stringBuf = Buffer.from(data)
     
         // Создаём файл и заполняем его данными из Буфера
-        zip.addFile(file, Buffer.from(stringBuf))
+        zip.addFile(file, Buffer.from(data))
         // Создаём архив и заполняем созданным файлом
         zip.writeZip('./images/catPic.zip')
       })
+    })
 
-      resolve()
-    })
-    .catch(error => console.error(error))
-    .then(() => {
-      time = performance.now() - time
-    })
+    time = performance.now() - time
+    console.log(`Время выполнения: ${time}`)
   })
-
-  console.log(`Время выполнения: ${time}`)
+  .catch(error => console.error(error))
 }
 
 getCatPic('https://cataas.com/cat')
-
 
 http.createServer((req, res) => {
 
