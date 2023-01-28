@@ -19,20 +19,25 @@ const getCatPic = (url) => {
 
   Promise.all([firstRespondAPIPic, secondRespondAPIPic])
     .then((apiData) => {
-      let createFile
+      nameCatPic = `cat_${Math.random().toString(16).slice(2)}`
 
-      apiData.forEach(data => {
-        nameCatPic = `cat_${Math.random().toString(16).slice(2)}`
-        
-        createFile = fs.createWriteStream(path.join(__dirname + `/images/${nameCatPic}.jpg`))
-        data.body.pipe(createFile)
-        console.log(nameCatPic)
-      })
+      createFile = fs.createWriteStream(path.join(__dirname + `/images/${nameCatPic}.jpg`))
+      apiData[0].body.pipe(createFile)
+      console.log(nameCatPic)
 
       createFile.on('finish', () => {
         time = performance.now() - time
+        
+        nameCatPic = `cat_${Math.random().toString(16).slice(2)}`
+        createFile = fs.createWriteStream(path.join(__dirname + `/images/${nameCatPic}.jpg`))
+        apiData[1].body.pipe(createFile)
+        console.log(nameCatPic)
 
-        getNamePic()
+        createFile.on('finish', () => {
+          time = performance.now() - time
+      
+          getNamePic()
+        })
       })
     })
     .catch((error) => {
@@ -73,10 +78,11 @@ const createZIPFile = files => {
         zip.addFile(file, Buffer.from(data))
         // Создаём архив и заполняем созданным файлом
         zip.writeZip('./images/catPic.zip')
+
+        time = performance.now() - time
       })
     })
 
-    time = performance.now() - time
     console.log(`Время выполнения: ${time}`)
   })
   .catch(error => console.error(error))
