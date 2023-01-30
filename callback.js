@@ -1,6 +1,4 @@
-const http = require('http')
 const https = require('node:https')
-const PORT = process.env.PORT ?? 3001
 const fs = require('fs')
 const path = require('path')
 const AdmZip = require('adm-zip')
@@ -73,11 +71,8 @@ const createZIPFile = (error, files) => {
           console.error(error)
         }
         else {
-          // Записываем данные в Буфер
-          const stringBuf = Buffer.from(data)
-      
           // Создаём файл и заполняем его данными из Буфера
-          zip.addFile(file, Buffer.from(stringBuf))
+          zip.addFile(file, Buffer.from(data))
           // Создаём архив и заполняем созданным файлом
           zip.writeZip('./images/catPic.zip')
         }
@@ -87,9 +82,3 @@ const createZIPFile = (error, files) => {
 }
 
 getCatPic('https://cataas.com/cat', getNamePic)
-
-http.createServer((req, res) => {
-
-}).listen(PORT, () => {
-  console.log(`Server run on ${PORT}...`)
-})

@@ -1,6 +1,4 @@
-const http = require('http')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
-const PORT = process.env.PORT ?? 3001
 const fs = require('fs')
 const path = require('path')
 const AdmZip = require('adm-zip')
@@ -90,9 +88,3 @@ const createZIPFile = files => {
 }
 
 getCatPic('https://cataas.com/cat')
-
-http.createServer((req, res) => {
-
-}).listen(PORT, () => {
-  console.log(`Server run on ${PORT}...`)
-})
