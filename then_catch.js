@@ -14,7 +14,7 @@ const getCatPic = (url) => {
       }
 
       return new Promise((resolve, reject) => {
-        firstNameCatPic = `cat_${Math.random().toString(16).slice(2)}`
+        let firstNameCatPic = `cat_${Math.random().toString(16).slice(2)}`
         
         createFile = fs.createWriteStream(path.join(__dirname + `/images/${firstNameCatPic}.jpg`))
         response.body.pipe(createFile)
@@ -36,7 +36,7 @@ const getCatPic = (url) => {
       }
 
       return new Promise((resolve, reject) => {
-        secondNameCatPic = `cat_${Math.random().toString(16).slice(2)}`
+        let secondNameCatPic = `cat_${Math.random().toString(16).slice(2)}`
 
         createFile = fs.createWriteStream(path.join(__dirname + `/images/${secondNameCatPic}.jpg`))
         response.body.pipe(createFile)
