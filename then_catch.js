@@ -8,6 +8,10 @@ console.time('Время выполнения')
 const getCatPic = (url) => {
   return fetch(url)
     .then((response) => {
+      if (!response.ok) {
+        throw new Error('Ошибка сервера')
+      }
+      
       return new Promise((resolve, reject) => {
         let nameCatPic = `cat_${Math.random().toString(16).slice(2)}`
 
@@ -71,8 +75,8 @@ const createZIPFile = (bufferDatas, nameCatPic) => {
 }
 
 Promise.all([
-  getCatPic('https://meduza.io/impro/TTLKm8OruGF5gxn3d6bEhdOMm6Qx3lnFJ4OuzrGUkmg/fill/1300/0/ce/1/aHR0cHM6Ly9tZWR1/emEuaW8vaW1hZ2Uv/YXR0YWNobWVudHMv/aW1hZ2VzLzAwOC83/MTIvMDQ1L29yaWdp/bmFsL2VSZTJLYnFo/cnRWZ3VEZDVmUGFC/VEEuanBn.webp'), 
-  getCatPic('https://meduza.io/impro/TTLKm8OruGF5gxn3d6bEhdOMm6Qx3lnFJ4OuzrGUkmg/fill/1300/0/ce/1/aHR0cHM6Ly9tZWR1/emEuaW8vaW1hZ2Uv/YXR0YWNobWVudHMv/aW1hZ2VzLzAwOC83/MTIvMDQ1L29yaWdp/bmFsL2VSZTJLYnFo/cnRWZ3VEZDVmUGFC/VEEuanBn.webp')
+  getCatPic('https://cataas.com/cat'), 
+  getCatPic('https://cataas.com/cat')
 ])
   .then((nameCatPics) => {
     Promise.all(nameCatPics.map((nameCatPic) => {
@@ -85,105 +89,3 @@ Promise.all([
   .catch((error) => {
     console.error(error)
   })
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const getCatPic = (url) => {
-//   let createFile
-
-//   const firstRespondAPIPic = fetch(url)
-//     .then((response) => {
-//       if (!response.ok) {
-//         throw new Error('Ошибка сервера')
-//       }
-
-//       return new Promise((resolve, reject) => {
-//         let firstNameCatPic = `cat_${Math.random().toString(16).slice(2)}`
-        
-//         createFile = fs.createWriteStream(path.join(__dirname + `/images/${firstNameCatPic}.jpg`))
-//         response.body.pipe(createFile)
-//         console.log(firstNameCatPic)
-
-//         createFile.on('finish', () => {
-//           resolve(firstNameCatPic)
-//         })
-//         createFile.on('error', () => {
-//           reject(new Error('Не удалось сохранить файл'))
-//         })
-//       })
-//     })
-
-//   const secondRespondAPIPic = fetch(url)
-//     .then((response) => {
-//       if (!response.ok) {
-//         throw new Error('Ошибка сервера')
-//       }
-
-//       return new Promise((resolve, reject) => {
-//         let secondNameCatPic = `cat_${Math.random().toString(16).slice(2)}`
-
-//         createFile = fs.createWriteStream(path.join(__dirname + `/images/${secondNameCatPic}.jpg`))
-//         response.body.pipe(createFile)
-//         console.log(secondNameCatPic)
-
-//         createFile.on('finish', () => {
-//           resolve(secondNameCatPic)
-//         })
-//         createFile.on('error', () => {
-//           reject(new Error('Не удалось сохранить файл'))
-//         })
-//       })
-//     })
-
-//   Promise.all([firstRespondAPIPic, secondRespondAPIPic])
-//     .then((nameCatPic) => {
-//       return createZIPFile(nameCatPic)
-//     })
-//     .catch((error) => {
-//       console.error(error)
-//     })
-// }
-
-// const createZIPFile = nameCatPics => {
-//   let overall = []
-  
-//   nameCatPics.forEach(nameCatPic => {
-//     const getDataPic = new Promise((resolve, reject) => {
-//       // Получаем данные из изображения
-//       fs.readFile(path.join(__dirname + '/images/' + nameCatPic + '.jpg'), (error, data) => {
-//         if (error) {
-//           reject(new Error('Не удалось получить данные из файлов'))
-//         }
-
-//         resolve([nameCatPic, data])
-//       })
-//     })
-//     overall.push(getDataPic)
-//   })
-  
-//   Promise.all(overall)
-//     .then((dataCatPic) => {
-//       const zip = new AdmZip()
-
-//       dataCatPic.forEach(data => {
-//         zip.addFile(data[0] + '.jpg', Buffer.from(data[1]))
-//       })
-
-//       zip.writeZip('./images/catPic.zip')
-
-//       console.timeEnd('Время выполнения')
-//     })
-//     .catch(error => console.error(error))
-// }
-
-// getCatPic('https://meduza.io/impro/TTLKm8OruGF5gxn3d6bEhdOMm6Qx3lnFJ4OuzrGUkmg/fill/1300/0/ce/1/aHR0cHM6Ly9tZWR1/emEuaW8vaW1hZ2Uv/YXR0YWNobWVudHMv/aW1hZ2VzLzAwOC83/MTIvMDQ1L29yaWdp/bmFsL2VSZTJLYnFo/cnRWZ3VEZDVmUGFC/VEEuanBn.webp')
