@@ -31,12 +31,12 @@ const getCatPic = (url, callback) => {
 const getBufferPic = (catNamePics, callback) => {
   fs.readFile(path.join(__dirname + '/images/' + catNamePics[0] + '.jpg'), (error, firstBufferData) => {
     if (error) {
-      return callback(new Error('Не удалось прочитать файл'))
+      return callback(new Error('Не удалось прочитать файл: ' + error))
     }
 
     fs.readFile(path.join(__dirname + '/images/' + catNamePics[1] + '.jpg'), (error, secondBufferData) => {
       if (error) {
-        return callback(new Error('Не удалось прочитать файл'))
+        return callback(new Error('Не удалось прочитать файл: ' + error))
       }
 
       callback(null, [firstBufferData, secondBufferData])
@@ -52,7 +52,7 @@ const createZIPFile = (bufferDatas, nameCatPic, callback) => {
 
   // Отлавливаем ошибки в процессе создания архива
   archive.on("error", (error) => {
-    return callback(new Error(`Не удалось создать архив: ${error}`))
+    return callback(new Error('Не удалось создать архив: ' + error))
   })
 
   // Записываем данные в поток
@@ -85,12 +85,12 @@ const allCatPic = (callback) => {
 
       getBufferPic([firstNameCatPic, secondNameCatPic], (error, bufferData) => {
         if (error) {
-          console.error(error)
+          return console.error(error)
         }
 
         createZIPFile(bufferData, [firstNameCatPic, secondNameCatPic], (error) => {
           if (error) {
-            console.error(error)
+            return console.error(error)
           }
         }) 
       })
